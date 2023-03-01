@@ -44,7 +44,7 @@ def run_tests():
     # Initialize Options objects for different browsers
     firefox_options = FirefoxOptions()
     firefox_options.add_argument('-headless')
-    firefox_options.set_preference('browser.privatebrowsing.autostart', True)
+    firefox_options.add_argument('-private')
     chrome_options = ChromeOptions()
     chrome_options.add_argument('headless')
     chrome_options.add_argument('incognito')
@@ -52,10 +52,10 @@ def run_tests():
     edge_options.add_argument('headless')
     edge_options.add_argument('inprivate')
 
-    browsers = {webdriver.Firefox: firefox_options,
-                webdriver.Chrome: chrome_options,
-                webdriver.Edge: edge_options,
-                }
+    browsers = ((webdriver.Firefox, firefox_options),
+                (webdriver.Chrome, chrome_options),
+                (webdriver.Edge, edge_options),
+                )
     results: dict[str, dict[str, list]] = {}
 
     # Run tests
@@ -64,7 +64,7 @@ def run_tests():
         port = random.randint(8000, 9000)
         server = Server(test, port)
 
-        for browser, options in browsers.items():
+        for (browser, options) in browsers:
             for trial_number in range(trials_per_test):
                 driver = browser(options=options)
                 if driver.name not in results[test]:
