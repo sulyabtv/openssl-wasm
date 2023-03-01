@@ -7,6 +7,6 @@
 #include <unistd.h>
 
 int int_sqrt(int x) {
-  sleep(5);
+  sleep(1);
   return sqrt(x);
 }
