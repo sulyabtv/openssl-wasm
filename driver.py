@@ -11,7 +11,7 @@ import random
 import functools
 import statistics
 
-tests = ['demo', 'aes', 'sha']
+tests = ['demo', 'aes', 'sha', 'aes_file']
 trials_per_test = 100
 
 
@@ -34,6 +34,7 @@ class Server():
     def __init__(self, test_name: str, port: int) -> None:
         self._server_thread = self.ServerThread(test_name, port)
         self._server_thread.start()
+        print(f"Server for test {test_name} started at port {port}")
 
     def stop(self):
         self._server_thread.stop()
@@ -71,9 +72,15 @@ def run_tests():
                     results[test][driver.name] = []
                 print(f"{test} {driver.name} {trial_number}")
                 driver.get(f"http://localhost:{port}/{test}.html")
-                output = driver.find_element(by=By.ID, value='output')
+                output_text, exec_time_text = "", ""
+                while output_text == "":
+                    output = driver.find_element(by=By.ID, value='output')
+                    output_text = output.text
                 print(f"Output: {output.text}")
-                exec_time = driver.find_element(by=By.ID, value='time')
+                while exec_time_text == "":
+                    exec_time = driver.find_element(by=By.ID, value='time')
+                    exec_time_text = exec_time.text
+                print(f"Exec time: {exec_time.text}")
                 results[test][driver.name].append(float(exec_time.text))
                 driver.quit()
         server.stop()

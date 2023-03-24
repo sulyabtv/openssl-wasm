@@ -217,6 +217,10 @@ cython_debug/
 # OpenSSL
 openssl-3.0.8/
 
-# Generated JS, wasm
+# Generated JS, wasm, data
 *.js
 *.wasm
+*.data
+
+# vscode stuff
+.vscode/
