@@ -11,7 +11,7 @@ import random
 import functools
 import statistics
 
-tests = ['demo', 'aes_256', 'sha_256', 'aes_256_file']
+tests = ['demo', 'aes_256', 'sha_256', 'aes_256_file', 'sha_256_file']
 trials_per_test = 100
 
 
