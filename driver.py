@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.support.wait import WebDriverWait
 
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer
@@ -10,16 +11,49 @@ import threading
 import random
 import functools
 import statistics
+import os
 
-tests = ['demo', 'aes_256', 'sha_256', 'aes_256_file', 'sha_256_file']
-trials_per_test = 100
+tests = [
+    # 'wasm/demo',
+    # 'js/aes_256', 'wasm/aes_256',
+    # 'js/aes_256_file',
+    # 'wasm/sha_256',
+    # 'wasm/sha_256_file'
+    'js/file/aes_256/small',
+    'js/file/aes_256/med',
+    'js/file/aes_256/large',
+    'wasm/file/aes_256_small',
+    'wasm/file/aes_256_med',
+    'wasm/file/aes_256_large',
+]
+trials_per_test = 1
+
+
+def is_js_file_test(test: str):
+    return 'js' in test and 'file' in test
+
+
+def is_wasm_file_test(test: str):
+    return 'wasm' in test and 'file' in test
+
+
+def get_testname(test: str):
+    if is_js_file_test(test):
+        return '/'.join(test.split('/')[:-1])
+    return test
+
+
+def get_html_filename(test: str):
+    if is_js_file_test(test):
+        return test.split('/')[-2]
+    return test.split('/')[-1]
 
 
 class Server():
     class ServerThread(threading.Thread):
         def __init__(self, test_name: str, port: int) -> None:
             super().__init__()
-            self.directory = f"./test/{test_name}/"
+            self.directory = f"./test/{get_testname(test_name)}/"
             self.port = port
 
         def run(self):
@@ -42,6 +76,17 @@ class Server():
 
 
 def run_tests():
+    def js_send_file_path(test: str,
+                          driver: webdriver.Chrome | webdriver.Firefox | webdriver.Edge):
+        filename = test.split('/')[-1]
+        WebDriverWait(driver, timeout=10).until(
+            lambda dr: dr.find_element(by=By.XPATH,
+                                       value="//input[@type='file']"))
+        file_chooser = driver.find_element(by=By.XPATH,
+                                           value="//input[@type='file']")
+        file_chooser.send_keys(os.path.join(os.path.dirname(__file__),
+                                            f"files/{filename}.txt"))
+
     # Initialize Options objects for different browsers
     firefox_options = FirefoxOptions()
     firefox_options.add_argument('-headless')
@@ -71,7 +116,12 @@ def run_tests():
                 if driver.name not in results[test]:
                     results[test][driver.name] = []
                 print(f"{test} {driver.name} {trial_number}")
-                driver.get(f"http://localhost:{port}/{test}.html")
+                html_filename = get_html_filename(test)
+                driver.get(f"http://localhost:{port}/{html_filename}.html")
+                if is_js_file_test(test):
+                    js_send_file_path(test, driver)
+                WebDriverWait(driver, timeout=10).until(lambda dr: dr.find_element(by=By.ID,
+                                                                                   value="output"))
                 output_text, exec_time_text = "", ""
                 while output_text == "":
                     output = driver.find_element(by=By.ID, value='output')
