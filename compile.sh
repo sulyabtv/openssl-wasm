@@ -33,11 +33,13 @@ do
         -sEXPORTED_FUNCTIONS=_main,_do_crypt \
         -sEXPORTED_RUNTIME_METHODS=ccall,cwrap \
         --preload-file files/$filesize.txt
-done
 
-emcc test/sha_256_file/sha_256_file.c openssl-3.0.8/libssl.a openssl-3.0.8/libcrypto.a \
-    -I$(pwd)/openssl-3.0.8/include \
-    -o test/sha_256_file/sha_256_file.js \
-    -sEXPORTED_FUNCTIONS=_main \
-    -sEXPORTED_RUNTIME_METHODS=ccall,cwrap \
-    --preload-file files/bigfile.txt
+    emcc test/wasm/file/sha_256_$filesize/sha_256_$filesize.c \
+         openssl-3.0.8/libssl.a \
+         openssl-3.0.8/libcrypto.a \
+        -I$(pwd)/openssl-3.0.8/include \
+        -o test/wasm/file/sha_256_$filesize/sha_256_$filesize.js \
+        -sEXPORTED_FUNCTIONS=_main \
+        -sEXPORTED_RUNTIME_METHODS=ccall,cwrap \
+        --preload-file files/$filesize.txt
+done

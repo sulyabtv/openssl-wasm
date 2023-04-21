@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script type="text/javascript" src="sha_256.js"></script>
+</head>
+
+<body>
+    <p id="output"></p>
+    <p id="time"></p>
+    <script>
+        let date1 = performance.now();
+        Module.onRuntimeInitialized = () => {
+            var result = Module.ccall('main', // name of C function
+                'number', // return type
+                [], // argument types
+                []); // arguments
+
+            document.getElementById("output").innerHTML = result
+            let date2 = performance.now();
+            document.getElementById("time").innerHTML = ((date2 - date1) / 1000).toFixed(6)
+        }
+    </script>
+</body>
+
+</html>

@@ -16,17 +16,24 @@ import os
 tests = [
     # 'wasm/demo',
     # 'js/aes_256', 'wasm/aes_256',
-    # 'js/aes_256_file',
-    # 'wasm/sha_256',
-    # 'wasm/sha_256_file'
+
+    # AES-256
     'js/file/aes_256/small',
     'js/file/aes_256/med',
     'js/file/aes_256/large',
     'wasm/file/aes_256_small',
     'wasm/file/aes_256_med',
     'wasm/file/aes_256_large',
+
+    # SHA-256
+    'js/file/sha_256/small',
+    'js/file/sha_256/med',
+    'js/file/sha_256/large',
+    'wasm/file/sha_256_small',
+    'wasm/file/sha_256_med',
+    'wasm/file/sha_256_large',
 ]
-trials_per_test = 1
+trials_per_test = 10
 
 
 def is_js_file_test(test: str):

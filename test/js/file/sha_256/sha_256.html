@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script type="text/javascript" src="sha_256.js"></script>
+</head>
+
+<body>
+    <input id="fileChooser" type="file" onchange="processFile(event)">
+    <p id="output"></p>
+    <p id="time"></p>
+    <script>
+        function processFile(event) {
+            var file = event.target.files[0], reader = new FileReader();
+            reader.onload = async function(e) {
+                var data = e.target.result;
+                result = await sha(data);
+                document.getElementById("output").innerHTML = result;
+                let date2 = performance.now();
+                document.getElementById("time").innerHTML = ((date2 - date1) / 1000).toFixed(6);
+            }
+            let date1 = performance.now();
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+
+</html>

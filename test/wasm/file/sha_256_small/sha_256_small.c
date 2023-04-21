@@ -3,9 +3,11 @@
 #include <openssl/err.h>
 #include <string.h>
 
+#define FILENAME "files/small.txt"
+
 int main()
 {
-    FILE *in = fopen("files/bigfile.txt", "rb");
+    FILE *in = fopen(FILENAME, "rb");
     unsigned char inbuf[1024];
 
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
